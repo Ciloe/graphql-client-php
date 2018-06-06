@@ -1,0 +1,6 @@
+{
+  testReal{
+    id
+  }
+  ...realFragment
+}

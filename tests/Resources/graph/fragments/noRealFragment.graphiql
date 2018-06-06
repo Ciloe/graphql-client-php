@@ -1,0 +1,5 @@
+fragment noRealFragment on real {
+    notHere{
+        id
+    }
+}

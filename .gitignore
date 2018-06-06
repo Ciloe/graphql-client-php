@@ -1,0 +1,10 @@
+/bin/
+/build/
+/vendor/
+/tests/Resources/cache/
+!/tests/Resources/cache/.gitkeep
+/demo/Resources/cache/
+!/demo/Resources/cache/.gitkeep
+
+composer.lock
+phpunit.xml

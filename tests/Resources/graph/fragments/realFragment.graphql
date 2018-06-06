@@ -1,0 +1,5 @@
+fragment realFragment on real {
+  test {
+    id
+  }
+}
