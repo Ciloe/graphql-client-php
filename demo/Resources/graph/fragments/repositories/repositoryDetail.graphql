@@ -1,0 +1,3 @@
+fragment repositoryDetail on Repository {
+  name
+}

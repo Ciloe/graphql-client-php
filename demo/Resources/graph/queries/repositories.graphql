@@ -1,0 +1,14 @@
+query ($number:Int!) {
+  viewer {
+    ...viewerDetail
+  }
+}
+
+fragment viewerDetail on User {
+  name
+  repositories(last: $number) {
+    nodes {
+      ...repositoryDetail
+    }
+  }
+}
