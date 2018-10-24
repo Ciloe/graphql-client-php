@@ -1,6 +1,6 @@
 {
-    testReal{
-        id
-    }
-    ...realFragment
+  testReal{
+    id
+  }
+  ...realFragment
 }

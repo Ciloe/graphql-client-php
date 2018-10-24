@@ -1,5 +1,5 @@
 fragment realFragment on real {
-    test {
-        id
-    }
+  test {
+    id
+  }
 }

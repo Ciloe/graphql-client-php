@@ -35,7 +35,7 @@ class BasicCacheTest extends TestCase
         );
         $this->assertSame(
             $realQueryWithFragment . sprintf("\n%s", $realFragment),
-            $adapter->getItem('testRealWithFragment')->get()
+            $adapter->getItem('testRealWithFragment')->get(). sprintf("\n")
         );
         $this->assertNull($adapter->getItem('noReal')->get());
         $this->assertNull($adapter->getItem('noRealFragment')->get());
