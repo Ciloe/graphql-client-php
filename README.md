@@ -1,5 +1,7 @@
 # **Graph Client PHP**
 
+[![Build Master Status](https://travis-ci.org/Ciloe/graph-client-php.svg?branch=master)](https://travis-ci.org/Ciloe/graph-client-php)
+
 ## How to install
 
 ### Install by **sources**
