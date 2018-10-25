@@ -27,9 +27,20 @@ $model = new \GraphClientPhp\Model\ApiModel('https://api.github.com', 'graphql',
 $bridge = new \GraphClientPhp\Bridge\BasicBridge($model);
 $client = new \GraphClientPhp\Client\BasicClient($bridge, $queryParser);
 
-$results = $client
+
+$client
+    ->setName('repositories5')
     ->setVariables(['number' => 5])
-    ->generateQuery($adapter->getItem('repositories')->get())
-    ->getResult();
+    ->generateQuery($adapter->getItem('repositories')->get());
+$client
+    ->setName('repositories6')
+    ->setVariables(['number' => 6])
+    ->generateQuery($adapter->getItem('repositories')->get());
+$client
+    ->setName('repositories10')
+    ->setVariables(['number' => 10])
+    ->generateQuery($adapter->getItem('repositories')->get());
+
+$results = $client->getResults(true);
 
 var_dump($results);

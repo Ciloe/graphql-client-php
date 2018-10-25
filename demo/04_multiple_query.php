@@ -25,6 +25,32 @@ $results = $client
            }
         }
     ')
-    ->getResult();
+    ->setVariables(['number' => 5])
+    ->generateQuery('
+        query ($number:Int!) {
+          viewer {
+            name
+             repositories(last: $number) {
+               nodes {
+                 name
+               }
+             }
+           }
+        }
+    ')
+    ->setVariables(['number' => 5])
+    ->generateQuery('
+        query ($number:Int!) {
+          viewer {
+            name
+             repositories(last: $number) {
+               nodes {
+                 name
+               }
+             }
+           }
+        }
+    ')
+    ->getResults(); // Use promise with parameter at true
 
 var_dump($results);

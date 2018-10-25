@@ -6,6 +6,9 @@ use GraphClientPhp\Exception\BadResponseException;
 use GraphClientPhp\Model\ApiModel;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Request;
+use Psr\Http\Message\ResponseInterface;
 
 class BasicBridge implements BridgeInterface
 {
@@ -37,7 +40,7 @@ class BasicBridge implements BridgeInterface
             $this->model->getUri(),
             [
                 'body' => $query,
-                'headers' => $headers
+                'headers' => $headers,
             ]
         );
 
@@ -56,17 +59,38 @@ class BasicBridge implements BridgeInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @throws BadResponseException|GuzzleException
      */
     public function queryAsync(array $queries): array
     {
-        $results = [];
+        $promises = [];
+        $payloads = [];
+
+        $client = new Client(['base_uri' => $this->model->getHost()]);
         foreach ($queries as $key => $query) {
-            $results[$key] = $this->query($key, $query);
+            $guzzleRequest = new Request(
+                'POST',
+                $this->model->getUri(),
+                $this->getHeaders(),
+                $query
+            );
+            $promise = $client->sendAsync($guzzleRequest);
+            $promise->then(
+                function (ResponseInterface $res) use (&$payloads, $key) {
+                    $payload = json_decode($res->getBody()->getContents());
+                    $payloads[$key] = $payload;
+                },
+                function (RequestException $e) use (&$payloads, $key) {
+                    $payloads[$key] = [
+                        ['message' => $this->parseResponseErrors([$e->getMessage()])],
+                    ];
+                }
+            );
+            $promises[$key] = $promise;
         }
 
-        return $results;
+        \GuzzleHttp\Promise\settle($promises)->wait();
+
+        return $payloads;
     }
 
     /**
@@ -75,7 +99,7 @@ class BasicBridge implements BridgeInterface
     protected function getHeaders(): array
     {
         return [
-            'content-type'  => 'application/json',
+            'content-type' => 'application/json',
             'authorization' => sprintf('Bearer %s', $this->model->getToken()),
         ];
     }
