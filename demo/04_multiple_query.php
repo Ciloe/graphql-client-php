@@ -7,9 +7,11 @@ if (empty($argv[1])) {
 require_once './../vendor/autoload.php';
 
 $token = $argv[1];
-$model = new \GraphQLClientPhp\Model\ApiModel('https://api.github.com', 'graphql', $token);
-$bridge = new \GraphQLClientPhp\Bridge\BasicBridge($model);
-$client = new \GraphQLClientPhp\Client\BasicClient($bridge, new GraphQLClientPhp\Parser\QueryBasicQueryParser());
+$client = \GraphQLClientPhp\Client\BasicClient::factory(
+    'https://api.github.com',
+    'graphql',
+    $token
+);
 
 $results = $client
     ->setVariables(['number' => 5])

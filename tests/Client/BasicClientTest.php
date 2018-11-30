@@ -362,19 +362,18 @@ GraphQl;
         $mock = new BridgeMock();
         $service = new BasicClient($mock, new QueryBasicQueryParser());
 
-        $query = <<<GraphQl
-        {
-            movie {
-                title
-            }
-        }
-GraphQl;
-
         $service
             ->setVariables(['string' => 'string'])
             ->addVariable('number', 5)
         ;
 
         $this->assertSame(['string' => 'string', 'number' => 5], $service->getVariables());
+    }
+
+    public function testFactory()
+    {
+        $service = BasicClient::factory('http://test.fr', 'test', 'MyToken');
+
+        $this->assertSame(BasicClient::class, get_class($service));
     }
 }

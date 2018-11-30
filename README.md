@@ -46,6 +46,22 @@ $client = new \GraphQLClientPhp\Client\BasicClient(
 );
 ```
 
+## Using factory
+
+To create faster a client, you can use the factory function like this.
+
+```php
+<?php
+
+require_once './vendor/autoload.php';
+
+$client = \GraphQLClientPhp\Client\BasicClient::factory(
+    'https://api.github.com',
+    'graphql',
+    'MyToken'
+);
+```
+
 Now you can use the client to call the api with a simple query :
 
 ```php
@@ -106,6 +122,28 @@ with fragment declared in `$fragment` folder. The cache is a
 single php file generated with the array adapter. The cache keys
 are the name of file. It must be unique.
 
+You can use the factory to create multiple cache object : 
+
+
+```php
+<?php
+
+// Some code
+
+$DS = DIRECTORY_SEPARATOR;
+$fileCache = __DIR__ . $DS . 'Resources' . $DS . 'cache' . $DS . 'cache.php';
+$queries = __DIR__ . $DS . 'Resources' . $DS . 'graph' . $DS . 'queries';
+$fragments = __DIR__ . $DS . 'Resources' . $DS . 'graph' . $DS . 'fragments';
+$queryParser = new \GraphQLClientPhp\Parser\QueryBasicQueryParser();
+
+$cache = \GraphQLClientPhp\Cache\BasicCache::factory(
+    $fileCache,
+    $queries,
+    $fragments,
+    $queryParser
+);
+```
+
 Now you can use queries by name.
 
 ```php
@@ -114,7 +152,7 @@ Now you can use queries by name.
 // Some code
 
 $query = $adapter->getItem('myQueryFile');
-$fragments = $adapter->getItem(\GraphQLClientPhp\Cache\BasicCache::CACHED_FRAGMENT_KEY);
+$fragments = $adapter->getItem(\GraphQLClientPhp\Cache\CacheInterface::CACHED_FRAGMENT_KEY);
 $client = new \GraphQLClientPhp\Client\BasicClient(
     $bridge, 
     new GraphQLClientPhp\Parser\QueryBasicParser(),

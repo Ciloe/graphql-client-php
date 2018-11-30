@@ -2,9 +2,12 @@
 
 namespace GraphQLClientPhp\Client;
 
+use GraphQLClientPhp\Bridge\BasicBridge;
 use GraphQLClientPhp\Bridge\BridgeInterface;
 use GraphQLClientPhp\Exception\FileNotFoundException;
 use GraphQLClientPhp\Exception\VariableParserException;
+use GraphQLClientPhp\Model\ApiModel;
+use GraphQLClientPhp\Parser\QueryBasicQueryParser;
 use GraphQLClientPhp\Parser\QueryParserInterface;
 use GraphQLClientPhp\Parser\VariableBasicParser;
 use GraphQLClientPhp\Parser\VariableParserInterface;
@@ -265,5 +268,28 @@ class BasicClient implements ClientInterface
         $this->queries = [];
 
         return $results;
+    }
+
+    /**
+     * @param string                     $host
+     * @param string                     $uri
+     * @param string                     $token
+     * @param QueryBasicQueryParser|null $parser
+     *
+     * @return ClientInterface
+     */
+    public static function factory(
+        string $host,
+        string $uri,
+        string $token,
+        QueryBasicQueryParser $parser = null
+    ): ClientInterface {
+        $model = new ApiModel($host, $uri, $token);
+        $bridge = new BasicBridge($model);
+        if (is_null($parser)) {
+            $parser = new QueryBasicQueryParser();
+        }
+
+        return new BasicClient($bridge, $parser);
     }
 }

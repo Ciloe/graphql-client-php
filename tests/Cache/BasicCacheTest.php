@@ -40,4 +40,28 @@ class BasicCacheTest extends TestCase
         $this->assertNull($adapter->getItem('noReal')->get());
         $this->assertNull($adapter->getItem('noRealFragment')->get());
     }
+
+    public function testCacheWithFactory()
+    {
+        $DS = DIRECTORY_SEPARATOR;
+        $fileCache = __DIR__ . $DS . '..' . $DS . 'Resources' . $DS . 'cache' . $DS . 'cache.php';
+        $queries = __DIR__ . $DS . '..' . $DS . 'Resources' . $DS . 'graph' . $DS . 'queries';
+        $fragments = __DIR__ . $DS . '..' . $DS . 'Resources' . $DS . 'graph' . $DS . 'fragments';
+
+        $service = BasicCache::factory($fileCache, $queries, $fragments);
+
+        $realQuery = file_get_contents($queries . $DS . 'testReal.graphql');
+        $realQueryWithFragment = file_get_contents($queries . $DS . 'testRealWithFragment.graphql');
+        $realFragment = file_get_contents($fragments . $DS . 'realFragment.graphql');
+        $this->assertSame(
+            $realQuery,
+            $service->getWriter()->getItem('testReal')->get()
+        );
+        $this->assertSame(
+            $realQueryWithFragment . sprintf("\n%s", $realFragment),
+            $service->getWriter()->getItem('testRealWithFragment')->get(). sprintf("\n")
+        );
+        $this->assertNull($service->getWriter()->getItem('noReal')->get());
+        $this->assertNull($service->getWriter()->getItem('noRealFragment')->get());
+    }
 }

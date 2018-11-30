@@ -2,6 +2,7 @@
 
 namespace GraphQLClientPhp\Cache;
 
+use GraphQLClientPhp\Parser\QueryBasicQueryParser;
 use GraphQLClientPhp\Parser\QueryParserInterface;
 use Symfony\Component\Cache\Adapter\PhpArrayAdapter;
 use Symfony\Component\Finder\Finder;
@@ -93,8 +94,46 @@ class BasicCache implements CacheInterface
         foreach ($this->queries as $name => $query) {
             $queries[$name] = $this->queryParser->parseQuery($query);
         }
-        $queries[self::CACHED_FRAGMENT_KEY] = $this->queryParser->getFragments();
+        $queries[CacheInterface::CACHED_FRAGMENT_KEY] = $this->queryParser->getFragments();
 
         $this->writer->warmUp($queries);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getWriter(): PhpArrayAdapter
+    {
+        return $this->writer;
+    }
+
+    /**
+     * @param string $fileCache
+     * @param string $queriesFolder
+     * @param string $fragmentsFolder
+     *
+     * @return CacheInterface
+     */
+    public static function factory(
+        string $fileCache,
+        string $queriesFolder,
+        string $fragmentsFolder,
+        QueryBasicQueryParser $queryParser = null
+    ): CacheInterface {
+        $pool = new \Symfony\Component\Cache\Adapter\FilesystemAdapter();
+        $adapter = new \Symfony\Component\Cache\Adapter\PhpArrayAdapter($fileCache, $pool);
+
+        if (is_null($queryParser)) {
+            $queryParser = new \GraphQLClientPhp\Parser\QueryBasicQueryParser();
+        }
+
+        $cache = new \GraphQLClientPhp\Cache\BasicCache(
+            $adapter,
+            $queryParser,
+            ['queries' => $queriesFolder, 'fragments' => $fragmentsFolder]
+        );
+        $cache->warmUp();
+
+        return $cache;
     }
 }
